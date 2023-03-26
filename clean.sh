@@ -1,0 +1,2 @@
+#!/bin/sh
+rm -f lex.yy.c paramfuncsegment param_func_segment.tab.c param_func_segment.tab.h

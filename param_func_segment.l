@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "y.tab.h"
+#include "param_func_segment.common.h"
+#include "param_func_segment.tab.h"
 
 void yyerror(char *);
 %}
@@ -12,11 +13,11 @@ segment    {
     return PARAMS_FUNC_SEGMENT;
 }
 [a-zA-Z_][a-zA-Z0-9_]* {
-	yylval = *yytext;
+	yylval.token_str_value = yytext;
     return IDENTIFIER;
 }
 [0-9]+                 {
-	yylval = atoi(yytext);
+	yylval.token_int_value = atoi(yytext);
     return NUMBER;
 }
 \(                      {
