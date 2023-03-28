@@ -8,6 +8,7 @@
 
 %{
 	#include <stdio.h>
+	#include <string.h>
 	#include "param_func_segment.common.h"
 
 	void yyerror(char *);
@@ -20,13 +21,13 @@
 	int token_int_value; // from lexer
 	const char *token_str_value; // from lexer
 	struct val_value the_val_value;
-	struct elementlist_value the_elementlist_value;
+	struct element_list the_elementlist;
 	struct command_tree the_command_tree;
 }
 
 %type <the_val_value> val
-%type <the_elementlist_value> elementlist
-%type <the_elementlist_value> segment
+%type <the_elementlist> elementlist
+%type <the_elementlist> segment
 %type <the_command_tree> statement
 
 %%
@@ -39,7 +40,7 @@ program:
 
 statement:
 	PARAMS_FUNC_SEGMENT segment {        
-        $$.command = "statement";
+        strcpy(&$$.command, "segment");
         $$.list = $2;
 		printf("Parsed: statement\n");
 	}
@@ -54,16 +55,14 @@ segment:
 
 elementlist:
     elementlist COMMA val {
-		struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
-		p->the_val = $3;
-		$$.last->next = p;
-		$$.last = p;
+		//struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
+		$$.values[$$.len] = $3;
+		$$.len += 1;
 	}
 	| val {
-		struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
-		p->the_val = $1;
-		$$.first = p;
-		$$.last = p;
+		//struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
+		$$.values[0] = $1;
+		$$.len = 1;
 	}
 	;
 
@@ -75,8 +74,9 @@ val:
 	}
 	| IDENTIFIER {
 		printf("val: var=%s\n", $1);
-		$$.is_identifier = 1;
-		$$.identifier = $1;
+		$$.is_identifier = 1; 
+        strcpy(&$$.identifier, $1);
+		//$$.identifier = $1;
 	}
 	;
 %%
@@ -87,18 +87,10 @@ void yyerror(char *s) {
 int main(void) {
 	yyparse();
 	
-	printf("command: %s\n", res.command);
-	printf("args:");
-	struct elementlist_node* node = res.list.first;
-	while(node) {
-        if (node->the_val.is_identifier) {
-            printf("%s; ", node->the_val.identifier);
-        } else {
-            printf("%d; ", node->the_val.number);
-        }
-        node = node->next;
-    }
-    printf("\n");
+	FILE * pFile;
+	pFile = fopen ("res.bin", "wb");
+    fwrite (&res, sizeof(struct command_tree), 1, pFile);
+    fclose (pFile);
             
 	return 0;
 }
