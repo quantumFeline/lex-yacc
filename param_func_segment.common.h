@@ -14,3 +14,8 @@
 		struct elementlist_node* first;
 		struct elementlist_node* last;
 	};
+    
+    struct command_tree {
+        const char* command; 
+        struct elementlist_value list;
+    };

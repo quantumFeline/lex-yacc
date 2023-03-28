@@ -29,9 +29,12 @@ segment    {
 \,                      {
     return COMMA;
 }
-[ \t\n]                ; /* ignore whitespace */
+[ \t]                ; /* ignore whitespace */
 .                      {
     yyerror("invalid char");
+}
+\n {
+    return EOL;
 }
 %%
 
