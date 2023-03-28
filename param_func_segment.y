@@ -41,7 +41,7 @@ statement:
 	PARAMS_FUNC_SEGMENT segment {        
         $$.command = "statement";
         $$.list = $2;
-		printf("Parsed: statement");
+		printf("Parsed: statement\n");
 	}
 	;
 	
@@ -53,16 +53,16 @@ segment:
     ;
 
 elementlist:
-	val {
-		struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
-		p->the_val = $1;
-		$$.first = p;
-		$$.last = p;
-	}
-	| elementlist COMMA val {
+    elementlist COMMA val {
 		struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
 		p->the_val = $3;
 		$$.last->next = p;
+		$$.last = p;
+	}
+	| val {
+		struct elementlist_node* p = malloc(sizeof(struct elementlist_node));
+		p->the_val = $1;
+		$$.first = p;
 		$$.last = p;
 	}
 	;
@@ -98,6 +98,7 @@ int main(void) {
         }
         node = node->next;
     }
+    printf("\n");
             
 	return 0;
 }
